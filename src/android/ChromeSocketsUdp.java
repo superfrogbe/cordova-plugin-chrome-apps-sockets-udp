@@ -21,32 +21,27 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
-import org.apache.cordova.PluginResult.Status;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.util.Log;
 
 public class ChromeSocketsUdp extends CordovaPlugin {
 
   private static final String LOG_TAG = "ChromeSocketsUdp";
 
   private Map<Integer, UdpSocket> sockets = new ConcurrentHashMap<Integer, UdpSocket>();
-  private BlockingQueue<SelectorMessage> selectorMessages =
-      new LinkedBlockingQueue<SelectorMessage>();
+  private BlockingQueue<SelectorMessage> selectorMessages = new LinkedBlockingQueue<SelectorMessage>();
   private int nextSocket = 0;
   private CallbackContext recvContext;
   private Selector selector;
   private SelectorThread selectorThread;
 
   @Override
-  public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  public boolean execute(String action, CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     if ("create".equals(action)) {
       create(args, callbackContext);
@@ -109,8 +104,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     return error;
   }
 
-  private void create(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void create(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     JSONObject properties = args.getJSONObject(0);
 
@@ -122,8 +116,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void update(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void update(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
     JSONObject properties = args.getJSONObject(1);
@@ -143,8 +136,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     callbackContext.success();
   }
 
-  private void setPaused(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void setPaused(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
     boolean paused = args.getBoolean(1);
@@ -165,8 +157,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void bind(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void bind(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
     String address = args.getString(1);
@@ -188,8 +179,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void send(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void send(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
     String address = args.getString(1);
@@ -209,13 +199,12 @@ public class ChromeSocketsUdp extends CordovaPlugin {
   }
 
   private void closeAllSockets() {
-    for (UdpSocket socket: sockets.values()) {
+    for (UdpSocket socket : sockets.values()) {
       addSelectorMessage(socket, SelectorMessageType.SO_CLOSE, null);
     }
   }
 
-  private void close(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void close(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
 
@@ -229,8 +218,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     addSelectorMessage(socket, SelectorMessageType.SO_CLOSE, callbackContext);
   }
 
-  private void getInfo(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void getInfo(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
 
@@ -243,20 +231,18 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     callbackContext.success(socket.getInfo());
   }
 
-  private void getSockets(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void getSockets(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     JSONArray results = new JSONArray();
 
-    for (UdpSocket socket: sockets.values()) {
+    for (UdpSocket socket : sockets.values()) {
       results.put(socket.getInfo());
     }
 
     callbackContext.success(results);
   }
 
-  private void joinGroup(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void joinGroup(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
     int socketId = args.getInt(0);
     String address = args.getString(1);
 
@@ -278,8 +264,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void leaveGroup(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void leaveGroup(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
     int socketId = args.getInt(0);
     String address = args.getString(1);
 
@@ -301,8 +286,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void setMulticastTimeToLive(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void setMulticastTimeToLive(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
     int socketId = args.getInt(0);
     int ttl = args.getInt(1);
 
@@ -322,8 +306,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void setBroadcast(CordovaArgs args, final CallbackContext callbackContext)
-    throws JSONException{
+  private void setBroadcast(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
     int socketId = args.getInt(0);
     boolean enabled = args.getBoolean(1);
 
@@ -344,8 +327,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
 
   }
 
-  private void setMulticastLoopbackMode(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void setMulticastLoopbackMode(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
     int socketId = args.getInt(0);
     boolean enabled = args.getBoolean(1);
 
@@ -365,8 +347,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void getJoinedGroups(CordovaArgs args, final CallbackContext callbackContext)
-      throws JSONException {
+  private void getJoinedGroups(CordovaArgs args, final CallbackContext callbackContext) throws JSONException {
 
     int socketId = args.getInt(0);
 
@@ -422,13 +403,15 @@ public class ChromeSocketsUdp extends CordovaPlugin {
   }
 
   private void startSelectorThread() {
-    if (selectorThread != null) return;
+    if (selectorThread != null)
+      return;
     selectorThread = new SelectorThread(selectorMessages, sockets);
     selectorThread.start();
   }
 
   private void stopSelectorThread() {
-    if (selectorThread == null) return;
+    if (selectorThread == null)
+      return;
 
     addSelectorMessage(null, SelectorMessageType.T_STOP, null);
     try {
@@ -438,11 +421,9 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     }
   }
 
-  private void addSelectorMessage(
-      UdpSocket socket, SelectorMessageType type, CallbackContext callbackContext) {
+  private void addSelectorMessage(UdpSocket socket, SelectorMessageType type, CallbackContext callbackContext) {
     try {
-      selectorMessages.put(new SelectorMessage(
-          socket, type, callbackContext));
+      selectorMessages.put(new SelectorMessage(socket, type, callbackContext));
       if (selector != null)
         selector.wakeup();
     } catch (InterruptedException e) {
@@ -450,11 +431,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
   }
 
   private enum SelectorMessageType {
-    SO_BIND,
-    SO_CLOSE,
-    SO_ADD_READ_INTEREST,
-    SO_ADD_WRITE_INTEREST,
-    T_STOP;
+    SO_BIND, SO_CLOSE, SO_ADD_READ_INTEREST, SO_ADD_WRITE_INTEREST, T_STOP;
   }
 
   private class SelectorMessage {
@@ -463,8 +440,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     final SelectorMessageType type;
     final CallbackContext callbackContext;
 
-    SelectorMessage(
-        UdpSocket socket, SelectorMessageType type, CallbackContext callbackContext) {
+    SelectorMessage(UdpSocket socket, SelectorMessageType type, CallbackContext callbackContext) {
       this.socket = socket;
       this.type = type;
       this.callbackContext = callbackContext;
@@ -477,9 +453,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
     private Map<Integer, UdpSocket> sockets;
     private boolean running = true;
 
-    SelectorThread(
-        BlockingQueue<SelectorMessage> selectorMessages,
-        Map<Integer, UdpSocket> sockets) {
+    SelectorThread(BlockingQueue<SelectorMessage> selectorMessages, Map<Integer, UdpSocket> sockets) {
       this.selectorMessages = selectorMessages;
       this.sockets = sockets;
     }
@@ -556,7 +530,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
             continue;
           }
 
-          UdpSocket socket = (UdpSocket)key.attachment();
+          UdpSocket socket = (UdpSocket) key.attachment();
 
           if (key.isReadable()) {
             socket.read();
@@ -591,8 +565,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
 
     private MulticastReadThread multicastReadThread;
 
-    UdpSocket(int socketId, JSONObject properties)
-        throws JSONException, IOException {
+    UdpSocket(int socketId, JSONObject properties) throws JSONException, IOException {
 
       this.socketId = socketId;
 
@@ -661,7 +634,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
       // Truncate the buffer if the message was shorter than it.
       if (packet.getLength() != out.length) {
         byte[] temp = new byte[packet.getLength()];
-        for(int i = 0; i < packet.getLength(); i++) {
+        for (int i = 0; i < packet.getLength(); i++) {
           temp[i] = out[i];
         }
         out = temp;
@@ -740,6 +713,8 @@ public class ChromeSocketsUdp extends CordovaPlugin {
       } catch (InterruptedException e) {
       } catch (IOException e) {
         sendPacket.callbackContext.error(buildErrorInfo(-2, e.getMessage()));
+      } catch (java.nio.channels.UnresolvedAddressException e) {
+        sendPacket.callbackContext.error(buildErrorInfo(-2, "Failed to resolve address"));
       }
     }
 
@@ -816,7 +791,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
       multicastSocket.setLoopbackMode(!enabled);
     }
 
-    void setBroadcast(boolean enabled) throws IOException{
+    void setBroadcast(boolean enabled) throws IOException {
       channel.socket().setBroadcast(enabled);
     }
 
@@ -842,8 +817,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
         byte[] recvBytes = new byte[recvBuffer.limit()];
         recvBuffer.get(recvBytes);
 
-        sendReceiveEvent(
-            recvBytes, socketId, address.getAddress().getHostAddress(), address.getPort());
+        sendReceiveEvent(recvBytes, socketId, address.getAddress().getHostAddress(), address.getPort());
 
       } catch (IOException e) {
         sendReceiveErrorEvent(-2, e.getMessage());
@@ -859,7 +833,7 @@ public class ChromeSocketsUdp extends CordovaPlugin {
       }
 
       public void run() {
-        while(!Thread.currentThread().isInterrupted()) {
+        while (!Thread.currentThread().isInterrupted()) {
 
           if (paused) {
             // Terminate the thread if the socket is paused
